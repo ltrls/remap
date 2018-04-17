@@ -72,6 +72,10 @@ defmodule Remap do
   end
 
   defmacro sigil_p({:<<>>, _, [term]}, modifiers) do
+    compile(term, modifiers) |> Macro.escape()
+  end
+
+  def compile(term, modifiers) do
     path =
       term
       |> Remap.Parser.parse
@@ -84,9 +88,7 @@ defmodule Remap do
         :element
       end
 
-    quote do
-      {:remap_path, unquote(destination), unquote(path)}
-    end
+    {:remap_path, destination, path}
   end
 
   @spec apply_modifiers(path, [modifier]) :: path
